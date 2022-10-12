@@ -4,6 +4,14 @@ from math import exp
 # To easily iterate on this file, here are quantities related to the file
 #Pour itérer facilement, voici les quantités liées au fichier
 
+
+# Write the name of your file 
+# --> Note that you can iterate on the file name because of the regularity in the names of OCCuPANt files
+
+# Ecrivez le nom de votre fichier
+# NB Il est possible d'itérer sur le nom
+
+
 file_name = 'test.csv'
 city = 'Brussels'
 Spic = 28.5
@@ -12,11 +20,7 @@ Sdeb = 24.91
 # First, we open our file
 # Premièrement, on ouvre notre fichier
 
-# Write the name of your file 
-# --> Note that you can iterate on the file name because of the regularity in the names of OCCuPANt files
 
-# Ecrivez le nom de votre fichier
-# NB Il est possible d'itérer sur le nom
 
 
 with open(file_name) as file:
