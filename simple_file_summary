@@ -1,0 +1,128 @@
+import numpy as np
+from math import exp
+
+# To easily iterate on this file, here are quantities related to the file
+#Pour itérer facilement, voici les quantités liées au fichier
+
+file_name = 'test.csv'
+city = 'Brussels'
+Spic = 28.5
+Sdeb = 24.91
+
+# First, we open our file
+# Premièrement, on ouvre notre fichier
+
+# Write the name of your file 
+# --> Note that you can iterate on the file name because of the regularity in the names of OCCuPANt files
+
+# Ecrivez le nom de votre fichier
+# NB Il est possible d'itérer sur le nom
+
+
+with open(file_name) as file:
+    li = file.readlines()
+
+# Now, let's remove spaces of our file
+# Supprimons les espaces de notre fichier
+    
+for g,i in enumerate(li):
+    #print(g,' : ',i)
+    li[g]=i.replace(' ','')
+#for g,i in enumerate(li):
+    #print(g,' : ',i)
+    #i.replace(' ','')
+    
+# A possible way to synthetise data could be to creat an array where each heatwave is synthetisez in a row
+# Une idée pourrait être de créer un grand array où chaque ligne représente une canicule
+
+
+# So here, we create an array where we will stock our data
+# It will be necessary to delete the rows of 2 at the end of the program
+
+#Nous créons donc un array pour y stocker nos données
+#Il faudra supprimer la rangée de 2 à la fin du programme, c'est car il faut initialiser l'array
+
+
+summary=np.ones((1,5))
+
+
+annee = 0
+nombre_de_canicules=0
+T_moy=0
+T_max=0
+dureecan=0
+Humidex_moy=0
+Intensity = 0
+numberofhours = 0
+T_j = []
+
+for g,i in enumerate(li):
+    #print(i,"\n",i[0])
+    if ((i[0]!='0')&(i[0]!='1')&(i[0]!='2')&(i[0]!='3')):
+        if i[0:4:1]=='----':
+            nombre_de_canicules+=1
+            T_moy/=dureecan
+            Humidex_moy/=dureecan
+            dureecan/=24
+            Intensity/=(Spic-Sdeb)
+            summary=np.insert(summary, summary.shape[0],np.array([annee,dureecan,T_moy,Humidex_moy, Intensity]),axis=0)
+            dureecan=0
+            T_moy=0
+            Humidex_moy=0
+            Intensity = 0
+            numberofhours = 0
+            annee = 0
+            T_j = []
+    elif (i[0]=='0')|(i[0]=='1')|(i[0]=='2')|(i[0]=='3'):
+        x= i.split(',')
+        #print(x[0])
+        if int(annee)<5:
+            annee = x[0][7:11]
+        #print(annee)
+        #print(float(x[1]))
+        dureecan+=1
+        T_moy+=float(x[1])
+        Humidex_moy += float(x[1]) + 0.5555*(6.11*exp(5417.753*((1/(273.16)) - (1/(float(x[8]) + 273.15))))-10)
+        T_j.append(float(x[1]))
+        if len(T_j)>=24:
+            warsage = np.array(T_j).mean()
+            T_j = []
+            #print(warsage)
+            if (warsage>Sdeb):
+                Intensity += warsage-Sdeb
+        
+        
+        
+        
+print("Number of heat wave(s) in file/Nombre de canicule(s) dans le fichier",file_name,":", nombre_de_canicules)
+
+#Because the first row is full of 1
+#Parceque la première ligne est pleine de 1
+summary = summary[1:][:]
+print(summary)
+# print(summary.shape)
+
+
+
+# Then, we can writ our results in a file
+# Maintenant, nous pouvons écrire nos résultats dans un fichier
+
+# np.savetxt("output.txt", summary, delimiter='\t')
+
+with open('myfile.txt', 'w') as f:
+    #f.write('summary')
+    for t,i in enumerate(summary):
+        d=i.astype(str)
+        #print(d)
+        if t!=0:
+            f.write('\n')
+        for huy,j in enumerate(d):
+            #print(huy,j)
+            if (huy == 0) | (huy ==1):
+                print(str(int(float(j))))
+                f.write(str(int(float(j))))
+                f.write('\t')
+            else:
+                f.write(j)
+                if huy < len(d)-1:
+                    f.write('\t')
